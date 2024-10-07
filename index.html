@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Tracking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #station-form, #train-form {
+            width: 50%;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #e7ecc8;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            height: 30px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            height: 40px;
+            background-color: #0a0f0b;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #station-list {
+            width: 50%;
+            margin: 20px auto;
+        }
+
+        #station-ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .station {
+            background-color: #f5f7aa;
+            padding: 10px;
+            border-bottom: 1px solid #f0fcad;
+        }
+
+        .station:last-child {
+            border-bottom: none;
+        }
+
+        .over-capacity {
+            background-color: #ffcccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Train Tracking System</h1>
+    
+    <!-- Add Station Form -->
+    <div id="station-form">
+        <h2>Add Station</h2>
+        <label for="station-name">Station Name:</label>
+        <input type="text" id="station-name" required><br><br>
+        <label for="station-capacity">Station Capacity:</label>
+        <input type="number" id="station-capacity" required><br><br>
+        <button id="add-station-button">Add Station</button>
+    </div>
+
+    <!-- Add Train Form -->
+    <div id="train-form">
+        <h2>Add Train to Station</h2>
+        <label for="station-select">Select Station:</label>
+        <select id="station-select"></select><br><br>
+        <button id="add-train-button">Add Train</button>
+    </div>
+
+    <!-- Station List -->
+    <div id="station-list">
+        <h2>Stations</h2>
+        <ul id="station-ul"></ul>
+    </div>
+
+    <script>
+        let stations = [];
+
+        // Function to add a new station
+        document.getElementById('add-station-button').addEventListener('click', () => {
+            const stationName = document.getElementById('station-name').value;
+            const stationCapacity = parseInt(document.getElementById('station-capacity').value);
+            
+            if (stationName && stationCapacity) {
+                const station = { name: stationName, capacity: stationCapacity, trains: 0 };
+                stations.push(station);
+                updateStationSelect();
+                updateStationList();
+
+                // Clear input fields
+                document.getElementById('station-name').value = '';
+                document.getElementById('station-capacity').value = '';
+            } else {
+                alert("Please fill out both fields.");
+            }
+        });
+
+        // Function to add a train to a selected station
+        document.getElementById('add-train-button').addEventListener('click', () => {
+            const selectedStation = document.getElementById('station-select').value;
+            const station = stations.find((station) => station.name === selectedStation);
+            
+            if (station) {
+                station.trains++;
+                updateStationList();
+            }
+        });
+
+        // Function to update the station selection dropdown
+        function updateStationSelect() {
+            const stationSelect = document.getElementById('station-select');
+            stationSelect.innerHTML = '';
+            
+            stations.forEach((station) => {
+                const option = document.createElement('option');
+                option.value = station.name;
+                option.text = station.name;
+                stationSelect.appendChild(option);
+            });
+        }
+
+        // Function to update the station list displayed on the page
+        function updateStationList() {
+            const stationUl = document.getElementById('station-ul');
+            stationUl.innerHTML = '';
+            
+            stations.forEach((station) => {
+                const stationLi = document.createElement('li');
+                stationLi.className = station.trains > station.capacity ? 'station over-capacity' : 'station';
+                stationLi.innerHTML = `
+                    <h2>${station.name}</h2>
+                    <p>Capacity: ${station.capacity}</p>
+                    <p>Trains: ${station.trains}</p>
+                `;
+                stationUl.appendChild(stationLi);
+            });
+        }
+    </script>
+</body>
+</html>
